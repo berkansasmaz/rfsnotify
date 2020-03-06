@@ -1,3 +1,3 @@
-module github.com/berkansasmaz/recursive-fsnotify
+module github.com/berkansasmaz/rfsnotify
 
 go 1.14
