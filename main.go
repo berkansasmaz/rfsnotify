@@ -25,6 +25,9 @@ type Watcher struct {
 
 //Include("path1", "path2", "path3", "...")
 func (w *Watcher) Include(path ...string) {
+	if w.filePaths == nil {
+		w.filePaths = make([]string, 1)
+	}
 	w.filePaths = append(w.filePaths, path...)
 }
 
