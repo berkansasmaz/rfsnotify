@@ -1,5 +1,7 @@
 package rfsnotify
 
+import "fmt"
+
 //rfsnotify.Add("directory", recursive=true, file.write, file.create, file.rename)
 
 //GoLang Enum
@@ -38,10 +40,17 @@ func (w *Watcher) Exclude(path ...string) {
 	}
 
 	for i := range indices {
-		delete(w.filePaths, indices[i])
+		deletePath(w.filePaths, indices[i])
 	}
 }
 
-func delete(paths []string, index int) {
-	paths = append(paths[:index], paths[index+1:]...) // or we can move the index to the end and use the delete function.
+func deletePath(paths []string, index int) []string { //this path is not the same paths paste.
+	if index > len(paths)-1 {
+		panic(fmt.Sprintf("index %v is bigger than the size of the paths slice!", index))
+	}
+	if index < len(paths)-1 {
+		return append(paths[:index], paths[index+1:]...) // or we can move the index to the end and use the deletePath function.
+	}
+
+	return paths[:index]
 }
