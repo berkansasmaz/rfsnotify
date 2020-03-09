@@ -1,6 +1,8 @@
 package rfsnotify
 
-import "testing"
+import (
+	"testing"
+)
 
 func getSamplesPaths() []string {
 	return []string{"hello", "world", "mars"}
@@ -42,13 +44,21 @@ func TestDeletePath_IndexIsLenMinusOne_DeletesLastElement(t *testing.T) {
 }
 
 func TestInclude_AddingPaths_AddedNewPaths(t *testing.T) {
-	var watcher = &Watcher{}
+	var watcher = &Watcher{} // equals new(Watcher)
 	watcher.Include("test1", "test2")
-	if len(watcher.filePaths) == 2 {
+	if len(watcher.filePaths) != 2 {
 		t.Error("len(watcher.filePaths) must be 2.")
 	}
-	if watcher.filePaths[0] == "test1" && watcher.filePaths[1] == "test2" {
+	if watcher.filePaths[0] != "test1" && watcher.filePaths[1] != "test2" {
 		t.Error("watcher.filePaths does not have correct items.")
 
 	}
+}
+
+func TestWatcher_AddingNothing_ReturnsNil(t *testing.T) {
+	var watcher = new(Watcher)
+	if watcher.filePaths != nil {
+		t.Error("wathcer.filePaths must be nil.")
+	}
+
 }
