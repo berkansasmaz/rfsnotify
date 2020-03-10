@@ -3,16 +3,16 @@ package rfsnotify
 import "fmt"
 
 //rfsnotify.Add("directory", recursive=true, file.write, file.create, file.rename)
-
+//blank idendtifier _
 //GoLang Enum
 type Event int
 
 const (
-	Unknown Event = 0
-	Deleted Event = 1
-	Created Event = 2
-	Renamed Event = 3
-	Write   Event = 4
+	Unknown Event = iota // number of the current const specification in a (usually parenthesized)
+	Deleted
+	Created
+	Renamed
+	Write
 )
 
 //type Watcher
