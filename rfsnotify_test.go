@@ -92,7 +92,16 @@ func TestInclude_AddingDuplicateItem_DuplicateItemsNotAdded(t *testing.T) {
 	var watcher = new(Watcher)
 	watcher.Include("file1.txt")
 	watcher.Include("file1.txt")
-	if len(watcher.filePaths) != 1 {
-		t.Error("len(watcher.filePath) must be 1.")
+	watcher.Include("file2.txt")
+	if len(watcher.filePaths) != 2 {
+		t.Error("len(watcher.filePath) must be 2.")
+	}
+}
+
+func TestInclude_AddingDuplicateItemAtTheSameTime_DuplicateItemsNotAdded(t *testing.T) {
+	var watcher = new(Watcher)
+	watcher.Include("file1.txt", "file1.txt", "file2.txt")
+	if len(watcher.filePaths) != 2 {
+		t.Error("len(watcher.filePath) must be 2.")
 	}
 }

@@ -24,15 +24,18 @@ type Watcher struct {
 }
 
 //Include("path1", "path2", "path3", "...")
-func (w *Watcher) Include(path ...string) {
-	for _, existingPath := range w.filePaths {
-		for _, newPath := range path {
-			if existingPath == newPath {
-				return
+func (w *Watcher) Include(paths ...string) {
+	for _, newPath := range paths {
+		var exists bool
+		for _, existingPath := range w.filePaths {
+			if exists = existingPath == newPath; exists {
+				break
 			}
 		}
+		if !exists {
+			w.filePaths = append(w.filePaths, newPath)
+		}
 	}
-	w.filePaths = append(w.filePaths, path...)
 }
 
 //Exlude
