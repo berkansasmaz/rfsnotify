@@ -66,13 +66,13 @@ func TestInclude_AddingNothing_ReturnsNil(t *testing.T) {
 
 func TestExclude_RemovingExistingItems_ItemsRemoved(t *testing.T) {
 	var watcher = new(Watcher)
-	watcher.Include("file1.txt", "file2.txt", "file3.txt")
+	watcher.Include("file1.txt", "file2.txt", "file3.txt.")
 	watcher.Exclude("file2.txt")
 	if len(watcher.filePaths) != 2 {
-		t.Error("len(watcher.filePaths must be 2)")
+		t.Error("len(watcher.filePaths) must be 2.")
 	}
 	if watcher.filePaths[0] != "file1.txt" && watcher.filePaths[1] != "file3.txt" {
-		t.Error("watcher.filePath[0] must be 'file1.txt' and watcher.filePath[1] must be 'file3.txt'")
+		t.Error("watcher.filePath[0] must be 'file1.txt' and watcher.filePath[1] must be 'file3.txt'.")
 	}
 }
 
@@ -84,6 +84,15 @@ func TestInclude_RemovingNonExistingItem_SliceRemainedTheSame(t *testing.T) {
 		t.Error("len(watcher.filePaths must be 2)")
 	}
 	if watcher.filePaths[0] != "file1.txt" && watcher.filePaths[1] != "file2.txt" {
-		t.Error("watcher.filePath[0] must be 'file1.txt' and watcher.filePath[1] must be 'file3.txt'")
+		t.Error("watcher.filePath[0] must be 'file1.txt' and watcher.filePath[1] must be 'file3.txt.'")
+	}
+}
+
+func TestInclude_AddingDuplicateItem_DuplicateItemsNotAdded(t *testing.T) {
+	var watcher = new(Watcher)
+	watcher.Include("file1.txt")
+	watcher.Include("file1.txt")
+	if len(watcher.filePaths) != 1 {
+		t.Error("len(watcher.filePath) must be 1.")
 	}
 }
