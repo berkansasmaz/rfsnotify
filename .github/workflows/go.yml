@@ -2,9 +2,9 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master,experiment-filePath-map ]
   pull_request:
-    branches: [ master ]
+    branches: [ master,experiment-filePath-map ]
 
 jobs:
 
