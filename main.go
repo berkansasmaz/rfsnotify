@@ -30,17 +30,12 @@ func (w *Watcher) Include(path ...string) {
 
 //Exlude
 func (w *Watcher) Exclude(path ...string) {
-	var indices = []int{}
 	for _, value := range path {
 		for i, v := range w.filePaths {
 			if value == v {
-				indices = append(indices, i)
+				w.filePaths = deletePath(w.filePaths, i)
 			}
 		}
-	}
-
-	for i := range indices {
-		deletePath(w.filePaths, indices[i])
 	}
 }
 
