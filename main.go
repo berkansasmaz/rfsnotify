@@ -7,7 +7,7 @@ import (
 )
 
 //rfsnotify.Add("directory", recursive=true, file.write, file.create, file.rename)
-//blank idendtifier _
+//blank identifier _
 //GoLang Enum
 type Event int
 
