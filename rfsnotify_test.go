@@ -104,7 +104,6 @@ func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 	if err != nil {
 		t.Error("An unidentified error", err)
 	}
-	t.Log(watcher.filePaths)
 	if len(watcher.filePaths) != 6 {
 		t.Error("watcher didn't find all the files")
 	}
