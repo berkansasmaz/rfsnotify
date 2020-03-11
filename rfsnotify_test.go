@@ -1,6 +1,9 @@
 package rfsnotify
 
 import (
+	"io/ioutil"
+	"os"
+	"path"
 	"testing"
 )
 
@@ -56,4 +59,45 @@ func TestInclude_AddingDuplicateItem_DuplicateItemsNotAdded(t *testing.T) {
 	if len(watcher.filePaths) != 1 {
 		t.Error("len(watcher.filePath) must be 1.")
 	}
+}
+
+func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
+	//Setup
+	dir, err := ioutil.TempDir("", "example")
+	if err != nil {
+		t.Fatal("Cannot create a temp directory")
+	}
+	defer os.RemoveAll(dir) // clean up
+
+	err = os.MkdirAll(path.Join(dir, "dir1", "dir2", "dir3"), os.ModePerm)
+
+	if err != nil {
+		t.Fatal("Cannot create a temp directory")
+	}
+
+	var tempFiles = []string{path.Join(dir, "dir1", "file1"),
+		path.Join(dir, "dir1", "file2"),
+		path.Join(dir, "dir1", "dir2", "file3"),
+		path.Join(dir, "dir1", "dir2", "file4"),
+		path.Join(dir, "dir1", "dir2", "dir3", "file5"),
+		path.Join(dir, "dir1", "dir2", "dir3", "file6"),
+	}
+
+	for _, fileName := range tempFiles {
+		err := ioutil.WriteFile(fileName, []byte("hello world"), os.ModePerm)
+		if err != nil {
+			t.Error("Cannot create file" + fileName)
+		}
+	}
+
+	//Test
+	watcher, err := NewWatcher(dir, true, nil)
+	if err != nil {
+		t.Error("An unidentified error", err)
+	}
+	t.Log(watcher.filePaths)
+	if len(watcher.filePaths) != 6 {
+		t.Error("watcher didn't find all the files")
+	}
+
 }
