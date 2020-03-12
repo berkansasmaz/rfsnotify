@@ -28,11 +28,10 @@ type Watcher struct {
 
 // Creates a new Watcher objcet and initializes the internal watch list
 // based on the given path.
-func NewWatcher(path string, recusive bool, event []Event) *Watcher {
+func NewWatcher(path string, event []Event) *Watcher {
 	var watcher = &Watcher{
-		Path:      path,
-		Recursive: recusive,
-		Events:    event,
+		Path:   path,
+		Events: event,
 	}
 
 	initFilePath(watcher)
