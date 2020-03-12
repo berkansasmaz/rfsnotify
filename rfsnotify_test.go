@@ -102,11 +102,7 @@ func setupWatchedDirectory(t *testing.T) string {
 func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 	dir := setupWatchedDirectory(t)
 	defer os.RemoveAll(dir) // clean up
-
-	watcher, err := NewWatcher(dir, true, nil)
-	if err != nil {
-		t.Error("An unidentified error.", err)
-	}
+	watcher := NewWatcher(dir, true, nil)
 	if len(watcher.filePaths) != 6 {
 		t.Error("watcher didn't find all the files.")
 	}
@@ -115,19 +111,35 @@ func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 func TestNewWatcher_GivenDirectoryAndInclude_ReturnsAllFiles(t *testing.T) {
 	dir := setupWatchedDirectory(t)
 	defer os.RemoveAll(dir) // clean up
+	watcher := NewWatcher(dir, true, nil)
+	watcher.Include("includeFile1.txt", "includeFile1.txt")
+	if len(watcher.filePaths) != 7 {
+		t.Error("len(watcher.filePaths) must be seven.")
+	}
 
-	watcher, err := NewWatcher(dir, true, nil)
+	watcher.Include("includeFile1.txt")
+
+	if len(watcher.filePaths) != 7 {
+		t.Error("len(watcher.filePaths) must be seven.")
+	}
+}
+
+func TestRefresh_AddingNewFile_GetAllFile(t *testing.T) {
+	dir := setupWatchedDirectory(t)
+	defer os.RemoveAll(dir) // clean up
+	watcher := NewWatcher(dir, true, nil)
+	if len(watcher.filePaths) != 6 {
+		t.Error("len(watcher.filePaths) must be six.")
+	}
+
+	err := ioutil.WriteFile(path.Join(dir, "file_new"), []byte("Hello again."), os.ModePerm)
 	if err != nil {
-		t.Error("An unidentified error.", err)
-	}
-	watcher.Include("includeFile1.txt")
-	if len(watcher.filePaths) != 7 {
-		t.Error("len(watcher.filePaths) must be seven.")
+		t.Error(err)
 	}
 
-	watcher.Include("includeFile1.txt")
+	watcher.Refresh()
 
 	if len(watcher.filePaths) != 7 {
-		t.Error("len(watcher.filePaths) must be seven.")
+		t.Error("Refresh method is not getting all discovering the new files.")
 	}
 }
