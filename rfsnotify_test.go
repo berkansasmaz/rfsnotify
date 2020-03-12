@@ -102,7 +102,7 @@ func setupWatchedDirectory(t *testing.T) string {
 func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 	dir := setupWatchedDirectory(t)
 	defer os.RemoveAll(dir) // clean up
-	watcher := NewWatcher(dir, true, nil)
+	watcher := NewWatcher(dir, nil)
 	if len(watcher.filePaths) != 6 {
 		t.Error("watcher didn't find all the files.")
 	}
@@ -111,7 +111,7 @@ func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 func TestNewWatcher_GivenDirectoryAndInclude_ReturnsAllFiles(t *testing.T) {
 	dir := setupWatchedDirectory(t)
 	defer os.RemoveAll(dir) // clean up
-	watcher := NewWatcher(dir, true, nil)
+	watcher := NewWatcher(dir, nil)
 	watcher.Include("includeFile1.txt", "includeFile1.txt")
 	if len(watcher.filePaths) != 7 {
 		t.Error("len(watcher.filePaths) must be seven.")
@@ -127,7 +127,7 @@ func TestNewWatcher_GivenDirectoryAndInclude_ReturnsAllFiles(t *testing.T) {
 func TestRefresh_AddingNewFile_GetAllFile(t *testing.T) {
 	dir := setupWatchedDirectory(t)
 	defer os.RemoveAll(dir) // clean up
-	watcher := NewWatcher(dir, true, nil)
+	watcher := NewWatcher(dir, nil)
 	if len(watcher.filePaths) != 6 {
 		t.Error("len(watcher.filePaths) must be six.")
 	}
