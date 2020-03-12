@@ -1,7 +1,6 @@
 package rfsnotify
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -27,30 +26,41 @@ type Watcher struct {
 	filePaths map[string]bool
 }
 
-//Wathcer Constructor
-func NewWatcher(path string, recusive bool, event []Event) (*Watcher, error) {
+// Creates a new Watcher objcet and initializes the internal watch list
+// based on the given path.
+func NewWatcher(path string, recusive bool, event []Event) *Watcher {
 	var watcher = &Watcher{
 		Path:      path,
 		Recursive: recusive,
 		Events:    event,
 	}
 
-	givenFileInfo, err := os.Stat(path)
+	initFilePath(watcher)
+
+	return watcher
+}
+
+func initFilePath(w *Watcher) {
+	givenFileInfo, err := os.Stat(w.Path)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	var allFilePaths []string
 
 	switch mode := givenFileInfo.Mode(); {
 	case mode.IsDir():
-		allFilePaths = getAllFiles(path)
-		watcher.Include(allFilePaths...)
+		allFilePaths = getAllFiles(w.Path)
+		w.Include(allFilePaths...)
 	case mode.IsRegular():
-		watcher.Include(path)
+		w.Include(w.Path)
 	}
 
-	return watcher, nil
+}
+
+// Finds newly added files in given path.
+func (w *Watcher) Refresh() {
+	initFilePath(w)
 }
 
 //walking directory
@@ -59,8 +69,7 @@ func getAllFiles(dirPath string) []string {
 	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		//todo check this Logic later.
 		if err != nil {
-			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
-			return err
+			panic(err)
 		}
 		if !info.IsDir() {
 			files = append(files, path)
@@ -68,14 +77,13 @@ func getAllFiles(dirPath string) []string {
 		return err
 	})
 	if err != nil {
-		fmt.Printf("error walking the path %q: %v\n", dirPath, err)
-		return nil
+		panic(err)
 	}
 
 	return files
 }
 
-//Include("path1", "path2", "path3", "...")
+// Add new files to the internal watch list to track.
 func (w *Watcher) Include(paths ...string) {
 	if w.filePaths == nil {
 		w.filePaths = make(map[string]bool)
@@ -87,7 +95,7 @@ func (w *Watcher) Include(paths ...string) {
 	}
 }
 
-//Exlude
+// Exludes paths from internal watch list .
 func (w *Watcher) Exclude(paths ...string) {
 	for _, path := range paths {
 		delete(w.filePaths, path)
