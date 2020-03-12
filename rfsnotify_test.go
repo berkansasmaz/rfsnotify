@@ -70,18 +70,16 @@ func TestInclude_AddingDuplicateItemAtTheSameTime_DuplicateItemsNotAdded(t *test
 	}
 }
 
-func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
-	//Setup
+func setupWatchedDirectory(t *testing.T) string {
 	dir, err := ioutil.TempDir("", "example")
 	if err != nil {
-		t.Fatal("Cannot create a temp directory")
+		t.Fatal("Cannot create a temp directory.")
 	}
-	defer os.RemoveAll(dir) // clean up
 
 	err = os.MkdirAll(path.Join(dir, "dir1", "dir2", "dir3"), os.ModePerm)
 
 	if err != nil {
-		t.Fatal("Cannot create a temp directory")
+		t.Fatal("Cannot create a temp directory.")
 	}
 
 	var tempFiles = []string{path.Join(dir, "dir1", "file1"),
@@ -95,17 +93,41 @@ func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
 	for _, fileName := range tempFiles {
 		err := ioutil.WriteFile(fileName, []byte("hello world"), os.ModePerm)
 		if err != nil {
-			t.Error("Cannot create file" + fileName)
+			t.Error("Cannot create file" + fileName + ".")
 		}
 	}
+	return dir
+}
 
-	//Test
+func TestNewWatcher_GivenDirectory_ReturnsAllFiles(t *testing.T) {
+	dir := setupWatchedDirectory(t)
+	defer os.RemoveAll(dir) // clean up
+
 	watcher, err := NewWatcher(dir, true, nil)
 	if err != nil {
-		t.Error("An unidentified error", err)
+		t.Error("An unidentified error.", err)
 	}
 	if len(watcher.filePaths) != 6 {
-		t.Error("watcher didn't find all the files")
+		t.Error("watcher didn't find all the files.")
+	}
+}
+
+func TestNewWatcher_GivenDirectoryAndInclude_ReturnsAllFiles(t *testing.T) {
+	dir := setupWatchedDirectory(t)
+	defer os.RemoveAll(dir) // clean up
+
+	watcher, err := NewWatcher(dir, true, nil)
+	if err != nil {
+		t.Error("An unidentified error.", err)
+	}
+	watcher.Include("includeFile1.txt")
+	if len(watcher.filePaths) != 7 {
+		t.Error("len(watcher.filePaths) must be seven.")
 	}
 
+	watcher.Include("includeFile1.txt")
+
+	if len(watcher.filePaths) != 7 {
+		t.Error("len(watcher.filePaths) must be seven.")
+	}
 }
