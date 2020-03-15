@@ -1,6 +1,8 @@
 package rfsnotify
 
 import (
+	"fmt"
+	"github.com/fsnotify/fsnotify"
 	"os"
 	"path/filepath"
 )
@@ -20,10 +22,12 @@ const (
 
 //type Watcher
 type Watcher struct {
-	Path      string
-	Recursive bool
-	Events    []Event //Enum array
-	filePaths map[string]bool
+	Path            string
+	Recursive       bool
+	Events          []Event //Enum array
+	filePaths       map[string]bool
+	internalWatcher *fsnotify.Watcher
+	newFilePath     []string
 }
 
 // Creates a new Watcher objcet and initializes the internal watch list
@@ -35,6 +39,18 @@ func NewWatcher(path string, event []Event) *Watcher {
 	}
 
 	initFilePath(watcher)
+
+	var fsWatcher, err = fsnotify.NewWatcher()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	watcher.internalWatcher = fsWatcher
+
+	for path := range watcher.filePaths {
+		// todo handle error.
+		fsWatcher.Add(path)
+	}
 
 	return watcher
 }
@@ -59,7 +75,12 @@ func initFilePath(w *Watcher) {
 
 // Finds newly added files in given path.
 func (w *Watcher) Refresh() {
+	w.newFilePath = nil
 	initFilePath(w)
+	for _, path := range w.newFilePath {
+		// todo handle error here.
+		w.internalWatcher.Add(path)
+	}
 }
 
 //walking directory
@@ -87,9 +108,19 @@ func (w *Watcher) Include(paths ...string) {
 	if w.filePaths == nil {
 		w.filePaths = make(map[string]bool)
 	}
+
+	if w.internalWatcher == nil {
+		w.internalWatcher, _ = fsnotify.NewWatcher()
+	}
+
 	for _, path := range paths {
 		if !w.filePaths[path] {
 			w.filePaths[path] = true
+			// todo handle error
+			w.internalWatcher.Add(path)
+
+			// keeping the recently added new file paths
+			w.newFilePath = append(w.newFilePath, path)
 		}
 	}
 }
