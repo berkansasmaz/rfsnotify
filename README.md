@@ -1,7 +1,7 @@
 # R-FSNotify
 <p>
 
-  <img alt="Build" src="https://github.com/berkansasmaz/rfsnotify/workflows/Go/badge.svg" /> 
+  <img alt="build" src="https://github.com/berkansasmaz/rfsnotify/workflows/Go/badge.svg" /> 
  <img alt="Version" src="https://img.shields.io/badge/version-0.6.5-blue.svg?cacheSeconds=2592000" />
    <a href="https://github.com/berkansasmaz/Ketum/blob/master/LICENSE" target="_blank">
     <img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-GPL3.0-yellow.svg" />
@@ -26,7 +26,9 @@ Since this package is still under development, the API surface may change as the
 
 ## Unit Tests
 This project is covered by various unit tests in the `rfsnotify_test.go` file. My intention is to keep it <strong> 100% covered </strong>. In case you would like to create PR for this project, please make sure that your code does not reduce the test coverage score. However, I am aware of the fact that not everything can be unit-testable, but it is still a crucial practice to keep unit tests in mind while contributing to this project.
-
+  
+  <img alt="unit-tests" src="https://user-images.githubusercontent.com/31216880/76708386-6a0eac80-6707-11ea-978e-c6ab625df22f.png" /> 
+  
 ## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome!<br/>Feel free to check [issues page](https://github.com/berkansasmaz/rfsnotify/issues). You can also take a look at the [contributing guide](https://dev.to/janessatran/a-beginner-s-guide-to-contributing-to-open-source-4fen).
