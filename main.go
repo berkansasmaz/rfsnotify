@@ -9,22 +9,12 @@ import (
 
 //rfsnotify.Add("directory", recursive=true, file.write, file.create, file.rename)
 //blank identifier _
-//GoLang Enum
-type Event int
-
-const (
-	Unknown Event = iota // number of the current const specification in a (usually parenthesized)
-	Deleted
-	Created
-	Renamed
-	Write
-)
 
 //type Watcher
 type Watcher struct {
-	Path      string
-	Recursive bool
-	Events    []Event // Enum array
+	Path   string
+	Events chan fsnotify.Event // Enum array
+	Errors chan error
 	// todo think about the usefulness of this backing slice. Because we can use fsnotify.Watcher internal backing slice.
 	filePaths       map[string]bool
 	internalWatcher *fsnotify.Watcher
@@ -32,10 +22,9 @@ type Watcher struct {
 
 // Creates a new Watcher objcet and initializes the internal watch list
 // based on the given path.
-func NewWatcher(path string, event []Event) *Watcher {
+func NewWatcher(path string) *Watcher {
 	var watcher = &Watcher{
-		Path:   path,
-		Events: event,
+		Path: path,
 	}
 
 	initFilePath(watcher)
@@ -45,7 +34,7 @@ func NewWatcher(path string, event []Event) *Watcher {
 		fmt.Println(err)
 	}
 
-	watcher.internalWatcher = fsWatcher
+	setInternalWatcher(watcher)
 
 	for path := range watcher.filePaths {
 		// todo handle error.
@@ -105,7 +94,7 @@ func (w *Watcher) Include(paths ...string) {
 	}
 
 	if w.internalWatcher == nil {
-		w.internalWatcher, _ = fsnotify.NewWatcher()
+		setInternalWatcher(w)
 	}
 
 	for _, path := range paths {
@@ -124,4 +113,10 @@ func (w *Watcher) Exclude(paths ...string) {
 		// todo handle error here.
 		w.internalWatcher.Remove(path)
 	}
+}
+
+func setInternalWatcher(w *Watcher) {
+	w.internalWatcher, _ = fsnotify.NewWatcher()
+	w.Events = w.internalWatcher.Events
+	w.Errors = w.internalWatcher.Errors
 }
